@@ -1,16 +1,24 @@
 
 const express = require('express');
-const app = express();
-const port = 4000;
 const {Pool} = require('pg');
-const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'roaster_d',
-    password: 'docker',
-    port: 5432,
+const cors = require('cors');
+// const port = 4000;
+// const pool = new Pool({
+//     user: 'postgres',
+//     host: '127.0.0.1',
+//     database: 'roaster_d',
+//     password: 'docker',
+//     port: 5432,
+// });
+const config=require('./config')[process.env.NODE_ENV||'dev'];
+const PORT = config.port;
+const pool= new Pool({
+    connectionString: config.connectionString
 });
+pool.connect();
+const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 app.get('/', (req, res) => {
@@ -90,6 +98,6 @@ app.patch('/roaster/:id', (req, res)=>{
 });
 
 
-app.listen(port, () => {
-    console.log(`listening on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`listening on port ${PORT}`);
 });
